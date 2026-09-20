@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My iPad Store</title>
+    <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">My Store</h1>
+            <button onclick="toggleCart()" class="bg-indigo-700 px-4 py-2 rounded-lg relative font-medium">
+                🛒 Cart (<span id="cart-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Products Grid -->
+    <main class="max-w-4xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 gap-6" id="product-grid"></main>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-end z-50">
+        <div class="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between shadow-2xl">
+            <div>
+                <div class="flex justify-between items-center border-b pb-4 mb-4">
+                    <h2 class="text-xl font-bold">Your Cart</h2>
+                    <button onclick="toggleCart()" class="text-gray-500 text-2xl font-bold">&times;</button>
+                </div>
+                <div id="cart-items" class="space-y-4 max-h-[60vh] overflow-y-auto"></div>
+            </div>
+            <div class="border-t pt-4">
+                <div class="flex justify-between text-lg font-bold mb-4">
+                    <span>Total Cost:</span>
+                    <span>\$ <span id="cart-total">0.00</span></span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-center hover:bg-green-700 transition">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // You can change your items, prices, and images right here later!
+        const products = [
+            { id: 1, name: "Premium Hoodie", price: 49.99, desc: "Ultra-soft cotton blend hoodie.", img: "https://unsplash.com" },
+            { id: 2, name: "Smart Water Bottle", price: 24.99, desc: "Insulated stainless steel design.", img: "https://unsplash.com" }
+        ];
+
+        let cart = [];
+
+        function displayProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border flex flex-col justify-between">
+                    <img src="${p.img}" class="w-full h-48 object-cover rounded-lg mb-4" alt="${p.name}">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">${p.name}</h3>
+                        <p class="text-sm text-gray-500 mb-2">${p.desc}</p>
+                        <p class="text-lg font-black text-indigo-600">$${p.price}</p>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
+                        Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            cart.push(item);
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const itemsContainer = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<p class="text-gray-500 text-center">Your cart is empty.</p>';
+            } else {
+                itemsContainer.innerHTML = cart.map((item, index) => `
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <h4 class="font-bold">${item.name}</h4>
+                            <p class="text-sm text-indigo-600">$${item.price}</p>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-500 text-sm font-semibold">Remove</button>
+                    </div>
+                `).join('');
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cart-total').innerText = total.toFixed(2);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function checkout() {
+            alert("Checkout simulated! We can connect a free payment gateway link here next.");
+        }
+
+        displayProducts();
+    </script>
+</body>
+</html>
